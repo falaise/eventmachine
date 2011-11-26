@@ -23,6 +23,13 @@ See the file COPYING for complete licensing information.
 #include "project.h"
 
 
+/* ibc
+ * Arrays of SSL contexts.
+ */
+static SslContext_t *ServerSslContexts[10];
+static SslContext_t *ClientSslContexts[10];
+
+
 bool SslContext_t::bLibraryInitialized = false;
 
 
@@ -462,6 +469,24 @@ extern "C" int ssl_verify_wrapper(int preverify_ok, X509_STORE_CTX *ctx)
 	BUF_MEM_free(buf);
 
 	return result;
+}
+
+/**********************
+ ibc
+ ssl_new_server_context
+**********************/
+extern "C" void ssl_new_server_context (const int num_ssl_server_context, const char *privatekey_filename, const char *certchain_filenane, int verify_peer)
+{
+
+}
+
+/**********************
+ ibc
+ ssl_new_client_context
+**********************/
+extern "C" void ssl_new_client_context (const int num_ssl_client_context, const char *privatekey_filename, const char *certchain_filenane, int verify_peer)
+{
+  
 }
 
 #endif // WITH_SSL

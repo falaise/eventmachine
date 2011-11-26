@@ -33,6 +33,7 @@ static unsigned int MaxOutstandingTimers = 100000;
  */
 static struct sockaddr *name2address (const char *server, int port, int *family, int *bind_size);
 
+
 /***************************************
 STATIC EventMachine_t::GetMaxTimerCount
 ***************************************/

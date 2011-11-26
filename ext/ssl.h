@@ -87,6 +87,10 @@ class SslBox_t
 
 extern "C" int ssl_verify_wrapper(int, X509_STORE_CTX*);
 
+// ibc
+extern "C" void ssl_new_server_context(const int num_server_ssl_context, const char *privatekey_filename, const char *certchain_filenane, int verify_peer);
+extern "C" void ssl_new_client_context(const int num_client_ssl_context, const char *privatekey_filename, const char *certchain_filenane, int verify_peer);
+
 #endif // WITH_SSL
 
 

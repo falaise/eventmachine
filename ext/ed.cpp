@@ -20,7 +20,6 @@ See the file COPYING for complete licensing information.
 #include "project.h"
 
 
-
 /********************
 SetSocketNonblocking
 ********************/

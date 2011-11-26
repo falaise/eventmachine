@@ -1396,25 +1396,55 @@ module EventMachine
   end
 
   # ibc
-  # Create a new SSL context.
-  def self.create_ssl_context name, options={}
-    @ssl_contexts ||= {}
-    num_ssl_context = @ssl_contexts.size
-    @ssl_contexts[name] = num_ssl_context
+  def self.create_server_ssl_context name, options={}
+    @server_ssl_contexts ||= {}
+    raise RuntimeError, "a server SSL context named #{name.inspect} already exists" if @server_ssl_contexts.include? name
+    
+    num_ssl_context = @server_ssl_contexts.size
+    raise RuntimeError, "max number (10) of server SSL contexts exceeded" if num_ssl_context == 10
+
+    @server_ssl_contexts[name] = num_ssl_context
 
     priv_key, cert_chain, verify_peer = options.values_at(:private_key_file, :cert_chain_file, :verify_peer)
 
     [priv_key, cert_chain].each do |file|
       next if file.nil? or file.empty?
       raise FileNotFoundException,
-      "Could not find #{file} for EM.create_ssl_context" unless File.exists? file
+      "Could not find #{file} for EM.create_server_ssl_context" unless File.exists? file
     end
 
-    EventMachine::set_ssl_context(num_ssl_context, priv_key || '', cert_chain || '', verify_peer)
+    EventMachine::set_server_ssl_context(num_ssl_context, priv_key || '', cert_chain || '', verify_peer)
   end
 
-  def self.ssl_contexts
-    @ssl_contexts || {}
+  # ibc
+  def self.server_ssl_contexts
+    @server_ssl_contexts || {}
+  end
+
+  # ibc
+  def self.create_client_ssl_context name, options={}
+    @client_ssl_contexts ||= {}
+    raise RuntimeError, "a client SSL context named #{name.inspect} already exists" if @client_ssl_contexts.include? name
+
+    num_ssl_context = @client_ssl_contexts.size
+    raise RuntimeError, "max number (10) of client SSL contexts exceeded" if num_ssl_context == 10
+
+    @client_ssl_contexts[name] = num_ssl_context
+
+    priv_key, cert_chain, verify_peer = options.values_at(:private_key_file, :cert_chain_file, :verify_peer)
+
+    [priv_key, cert_chain].each do |file|
+      next if file.nil? or file.empty?
+      raise FileNotFoundException,
+      "Could not find #{file} for EM.create_client_ssl_context" unless File.exists? file
+    end
+
+    EventMachine::set_client_ssl_context(num_ssl_context, priv_key || '', cert_chain || '', verify_peer)
+  end
+
+  # ibc
+  def self.client_ssl_contexts
+    @client_ssl_contexts || {}
   end
   
   # @private

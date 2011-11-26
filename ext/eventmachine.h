@@ -69,8 +69,10 @@ extern "C" {
 	void evma_set_tls_parms (const unsigned long binding, const char *privatekey_filename, const char *certchain_filenane, int verify_peer);
 	void evma_start_tls (const unsigned long binding);
   // ibc
-  void evma_set_ssl_context (const int num_ssl_context, const char *privatekey_filename, const char *certchain_filenane, int verify_peer);
-  void evma_use_ssl_context (const unsigned long binding, const int num_ssl_context);
+  void evma_set_server_ssl_context (const int num_server_ssl_context, const char *privatekey_filename, const char *certchain_filenane, int verify_peer);
+  void evma_set_client_ssl_context (const int num_client_ssl_context, const char *privatekey_filename, const char *certchain_filenane, int verify_peer);
+  void evma_use_server_ssl_context (const unsigned long binding, const int num_server_ssl_context);
+  void evma_use_client_ssl_context (const unsigned long binding, const int num_client_ssl_context);
 
 	#ifdef WITH_SSL
 	X509 *evma_get_peer_cert (const unsigned long binding);

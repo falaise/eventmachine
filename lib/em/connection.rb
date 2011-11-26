@@ -411,11 +411,20 @@ module EventMachine
     end
 
     # ibc
-    def use_ssl_context name
-      if (num_ssl_context = EventMachine.ssl_contexts name)
-        EventMachine::use_ssl_context(@signature, num_ssl_context)
+    def use_server_ssl_context name
+      if (num_server_ssl_context = EventMachine.server_ssl_contexts[name])
+        EventMachine::use_server_ssl_context(@signature, num_ssl_context)
       else
-        raise ArgumentError, "Could not find SSL context with name #{name}"
+        raise ArgumentError, "Could not find server SSL context with name #{name}"
+      end
+    end
+
+    # ibc
+    def use_client_ssl_context name
+      if (num_client_ssl_context = EventMachine.client_ssl_contexts[name])
+        EventMachine::use_client_ssl_context(@signature, num_client_ssl_context)
+      else
+        raise ArgumentError, "Could not find client SSL context with name #{name}"
       end
     end
     

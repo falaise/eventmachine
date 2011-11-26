@@ -440,6 +440,28 @@ extern "C" void evma_set_tls_parms (const unsigned long binding, const char *pri
 		ed->SetTlsParms (privatekey_filename, certchain_filename, (verify_peer == 1 ? true : false));
 }
 
+/***************************
+ibc
+evma_set_server_ssl_context
+***************************/
+
+extern "C" void evma_set_server_ssl_context (const int num_server_ssl_context, const char *privatekey_filename, const char *certchain_filenane, int verify_peer)
+{
+  ensure_eventmachine("evma_set_server_ssl_context");
+  ssl_new_server_context(num_server_ssl_context, privatekey_filename, certchain_filenane, verify_peer);
+}
+
+/***************************
+ibc
+evma_set_client_ssl_context
+***************************/
+
+extern "C" void evma_set_client_ssl_context (const int num_client_ssl_context, const char *privatekey_filename, const char *certchain_filenane, int verify_peer)
+{
+  ensure_eventmachine("evma_set_client_ssl_context");
+  ssl_new_client_context(num_client_ssl_context, privatekey_filename, certchain_filenane, verify_peer);
+}
+
 /******************
 evma_get_peer_cert
 ******************/
