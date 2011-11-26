@@ -120,7 +120,7 @@ static void InitializeDefaultCredentials()
 SslContext_t::SslContext_t
 **************************/
 
-SslContext_t::SslContext_t (bool is_server, const string &cafile, const string &privkeyfile, const string &privkeypwd, const string &certchainfile):
+SslContext_t::SslContext_t (bool is_server, const string &privkeyfile, const string &certchainfile):
 	pCtx (NULL),
 	PrivateKey (NULL),
 	Certificate (NULL)
@@ -182,23 +182,12 @@ SslContext_t::SslContext_t (bool is_server, const string &cafile, const string &
 	else {
 		int e;
 		if (privkeyfile.length() > 0) {
-			// if a private key password is provided then set it in this context. note that that assumes
-			// the current approach of having a unique context per request
-			if (privkeypwd.length() > 0) {
-				SSL_CTX_set_default_passwd_cb_userdata(pCtx, const_cast<char*>(privkeypwd.c_str()));
-			}
 			e = SSL_CTX_use_PrivateKey_file (pCtx, privkeyfile.c_str(), SSL_FILETYPE_PEM);
 			if (e <= 0) ERR_print_errors_fp(stderr);
 			assert (e > 0);
 		}
 		if (certchainfile.length() > 0) {
 			e = SSL_CTX_use_certificate_chain_file (pCtx, certchainfile.c_str());
-			if (e <= 0) ERR_print_errors_fp(stderr);
-			assert (e > 0);
-		}
-		// load trusted ca cert chain for validation of server certificatess
-		if (cafile.length() > 0) {
-			e = SSL_CTX_load_verify_locations(pCtx, const_cast<char*>(cafile.c_str()), 0);
 			if (e <= 0) ERR_print_errors_fp(stderr);
 			assert (e > 0);
 		}
@@ -225,11 +214,9 @@ SslContext_t::~SslContext_t()
 
 /******************
 SslBox_t::SslBox_t
-* [MH] Added cafile - an optional certificate authority file provided to SSL_CTX_load_verify_locations for client-side server certificate verification using this list of known trusted CAs.
-* [MH] Added privkeypwd - an optional password used to decrypt the privatekey_filename.
 ******************/
 
-SslBox_t::SslBox_t (bool is_server, const string &cafile, const string &privkeyfile, const string &privkeypwd, const string &certchainfile, bool verify_peer, const unsigned long binding):
+SslBox_t::SslBox_t (bool is_server, const string &privkeyfile, const string &certchainfile, bool verify_peer, const unsigned long binding):
 	bIsServer (is_server),
 	bHandshakeCompleted (false),
 	bVerifyPeer (verify_peer),
@@ -241,7 +228,7 @@ SslBox_t::SslBox_t (bool is_server, const string &cafile, const string &privkeyf
 	 * a new one every time we come here.
 	 */
 
-	Context = new SslContext_t (bIsServer, cafile, privkeyfile, privkeypwd, certchainfile);
+	Context = new SslContext_t (bIsServer, privkeyfile, certchainfile);
 	assert (Context);
 
 	pbioRead = BIO_new (BIO_s_mem());
@@ -454,11 +441,6 @@ ssl_verify_wrapper
 
 extern "C" int ssl_verify_wrapper(int preverify_ok, X509_STORE_CTX *ctx)
 {
-	// if the pre verification has failed, then don't bother validating via ruby
-	if (preverify_ok != 1) {
-		return preverify_ok;
-	}
-		
 	unsigned long binding;
 	X509 *cert;
 	SSL *ssl;
