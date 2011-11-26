@@ -410,6 +410,15 @@ module EventMachine
       EventMachine::start_tls @signature
     end
 
+    # ibc
+    def use_ssl_context name
+      if (num_ssl_context = EventMachine.ssl_contexts name)
+        EventMachine::use_ssl_context(@signature, num_ssl_context)
+      else
+        raise ArgumentError, "Could not find SSL context with name #{name}"
+      end
+    end
+    
     # If [TLS](http://en.wikipedia.org/wiki/Transport_Layer_Security) is active on the connection, returns the remote [X509 certificate](http://en.wikipedia.org/wiki/X.509)
     # as a string, in the popular [PEM format](http://en.wikipedia.org/wiki/Privacy_Enhanced_Mail). This can then be used for arbitrary validation
     # of a peer's certificate in your code.

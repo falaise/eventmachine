@@ -1395,6 +1395,28 @@ module EventMachine
     EM::set_heartbeat_interval time.to_f
   end
 
+  # ibc
+  # Create a new SSL context.
+  def self.create_ssl_context name, options={}
+    @ssl_contexts ||= {}
+    num_ssl_context = @ssl_contexts.size
+    @ssl_contexts[name] = num_ssl_context
+
+    priv_key, cert_chain, verify_peer = options.values_at(:private_key_file, :cert_chain_file, :verify_peer)
+
+    [priv_key, cert_chain].each do |file|
+      next if file.nil? or file.empty?
+      raise FileNotFoundException,
+      "Could not find #{file} for EM.create_ssl_context" unless File.exists? file
+    end
+
+    EventMachine::set_ssl_context(num_ssl_context, priv_key || '', cert_chain || '', verify_peer)
+  end
+
+  def self.ssl_contexts
+    @ssl_contexts || {}
+  end
+  
   # @private
   def self.event_callback conn_binding, opcode, data
     #

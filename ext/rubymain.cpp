@@ -311,6 +311,30 @@ static VALUE t_set_tls_parms (VALUE self, VALUE signature, VALUE privkeyfile, VA
 	return Qnil;
 }
 
+
+/*****************
+ibc
+t_use_ssl_context
+*****************/
+
+static VALUE t_use_ssl_context (VALUE self, VALUE signature, VALUE num_ssl_context)
+{
+  evma_use_ssl_context (NUM2ULONG (signature), NUM2INT (num_ssl_context));
+  return Qnil;
+}
+
+
+/*****************
+t_set_ssl_context
+*****************/
+
+static VALUE t_set_ssl_context (VALUE self, VALUE num_ssl_context, VALUE privkeyfile, VALUE certchainfile, VALUE verify_peer)
+{
+  evma_set_ssl_context (NUM2INT (num_ssl_context), StringValuePtr (privkeyfile), StringValuePtr (certchainfile), (verify_peer == Qtrue ? 1 : 0));
+  return Qnil;
+}
+
+
 /***************
 t_get_peer_cert
 ***************/
@@ -1168,6 +1192,9 @@ extern "C" void Init_rubyeventmachine()
 	rb_define_module_function (EmModule, "start_unix_server", (VALUE(*)(...))t_start_unix_server, 1);
 	rb_define_module_function (EmModule, "set_tls_parms", (VALUE(*)(...))t_set_tls_parms, 4);
 	rb_define_module_function (EmModule, "start_tls", (VALUE(*)(...))t_start_tls, 1);
+  // ibc
+  rb_define_module_function (EmModule, "set_ssl_context", (VALUE(*)(...))t_set_ssl_context, 4);
+  rb_define_module_function (EmModule, "use_ssl_context", (VALUE(*)(...))t_use_ssl_context, 2);
 	rb_define_module_function (EmModule, "get_peer_cert", (VALUE(*)(...))t_get_peer_cert, 1);
 	rb_define_module_function (EmModule, "send_data", (VALUE(*)(...))t_send_data, 3);
 	rb_define_module_function (EmModule, "send_datagram", (VALUE(*)(...))t_send_datagram, 5);
